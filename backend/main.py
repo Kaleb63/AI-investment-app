@@ -1,5 +1,12 @@
 from fastapi import FastAPI
+import os
+import httpx
 
+from dotenv import load_dotenv
+from fastapi import FastAPI
+
+load_dotenv()
+api_key = os.getenv("FINNHUB_API_KEY")
 app = FastAPI()
 
 @app.get("/")
@@ -20,3 +27,18 @@ def get_stock(ticker: str):
         "shares": stocks[ticker]["shares"]
     }
 get_stock("NVDA")
+
+def get_live_price(ticker: str):
+    url = "https://finnhub.io/api/v1/quote"
+
+    response = httpx.get(
+        url,
+        params={
+            "symbol": ticker,
+            "token": api_key
+        }
+    )
+    data = response.json()
+    return data["c"]
+
+print(get_live_price("NVDA"))
