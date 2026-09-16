@@ -10,6 +10,11 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from pydantic import BaseModel
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+
+class PublicTokenRequest(BaseModel):
+    public_token: str
 
 load_dotenv()
 api_key = os.getenv("FINNHUB_API_KEY")
@@ -27,6 +32,7 @@ configuration = plaid.Configuration(
 #create a plaid client
 api_client = plaid.ApiClient(configuration)
 plaid_client = plaid_api.PlaidApi(api_client)
+access_token = None
 
 #home page message
 @app.get("/")
@@ -63,6 +69,19 @@ def create_link_token():
     response = plaid_client.link_token_create(request)
     return {"link_token": response.link_token}
 
+@app.post("/exchange_public_token")
+def exchange_public_token(data: PublicTokenRequest):
+    global access_token
+
+    request = ItemPublicTokenExchangeRequest(
+        public_token=data.public_token
+    )
+
+    response = plaid_client.item_public_token_exchange(request)
+
+    access_token = response.access_token
+
+    return {"message": "Plaid account connected"}
 #get live stock price from finnhub api
 def get_live_price(ticker: str):
     url = "https://finnhub.io/api/v1/quote"
