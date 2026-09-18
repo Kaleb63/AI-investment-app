@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
+from fastapi import HTTPException
 
 class PublicTokenRequest(BaseModel):
     public_token: str
@@ -68,7 +70,7 @@ def create_link_token():
     )
     response = plaid_client.link_token_create(request)
     return {"link_token": response.link_token}
-
+# Get temporary access token from Plaid
 @app.post("/exchange_public_token")
 def exchange_public_token(data: PublicTokenRequest):
     global access_token
@@ -82,6 +84,23 @@ def exchange_public_token(data: PublicTokenRequest):
     access_token = response.access_token
 
     return {"message": "Plaid account connected"}
+
+# get investment data using the Plaid access token
+@app.get("/holdings")
+def get_holdings():
+    if access_token is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Connect a Plaid account first"
+        )
+
+    request = InvestmentsHoldingsGetRequest(
+        access_token=access_token
+    )
+
+    response = plaid_client.investments_holdings_get(request)
+
+    return response.to_dict()
 #get live stock price from finnhub api
 def get_live_price(ticker: str):
     url = "https://finnhub.io/api/v1/quote"
