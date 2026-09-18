@@ -14,6 +14,8 @@ from pydantic import BaseModel
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
 from fastapi import HTTPException
+from plaid.model.sandbox_public_token_create_request import SandboxPublicTokenCreateRequest
+from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
 
 class PublicTokenRequest(BaseModel):
     public_token: str
@@ -84,6 +86,20 @@ def exchange_public_token(data: PublicTokenRequest):
     access_token = response.access_token
 
     return {"message": "Plaid account connected"}
+#get a sandbox public token for testing purposes
+@app.post("/sandbox_public_token")
+def create_sandbox_public_token():
+
+    request = SandboxPublicTokenCreateRequest(
+        institution_id="ins_109508",
+        initial_products=[Products("investments")]
+    )
+
+    response = plaid_client.sandbox_public_token_create(request)
+
+    return {
+        "public_token": response.public_token
+    }
 
 # get investment data using the Plaid access token
 @app.get("/holdings")
@@ -101,6 +117,44 @@ def get_holdings():
     response = plaid_client.investments_holdings_get(request)
 
     return response.to_dict()
+#clean up the portfolio data to only include relevant information
+@app.get("/plaid_portfolio")
+def get_plaid_portfolio():
+
+    if access_token is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Connect a Plaid account first"
+        )
+
+    request = InvestmentsHoldingsGetRequest(
+        access_token=access_token
+    )
+
+    response = plaid_client.investments_holdings_get(request)
+
+    data = response.to_dict()
+
+    securities = {
+        security["security_id"]: security
+        for security in data["securities"]
+    }
+
+    portfolio = []
+
+    for holding in data["holdings"]:
+
+        security = securities[holding["security_id"]]
+
+        portfolio.append({
+            "ticker": security.get("ticker_symbol"),
+            "name": security.get("name"),
+            "shares": holding.get("quantity"),
+            "price": holding.get("institution_price"),
+            "value": holding.get("institution_value")
+        })
+
+    return {"portfolio": portfolio}
 #get live stock price from finnhub api
 def get_live_price(ticker: str):
     url = "https://finnhub.io/api/v1/quote"
