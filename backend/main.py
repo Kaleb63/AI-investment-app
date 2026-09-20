@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+
 import os
 import httpx
 import plaid
@@ -20,8 +20,12 @@ from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetR
 class PublicTokenRequest(BaseModel):
     public_token: str
 
-load_dotenv()
-api_key = os.getenv("FINNHUB_API_KEY")
+from pathlib import Path
+
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+api_key = os.getenv("FINNHUB_API_KEY", "").strip()
 app = FastAPI()
 plaid_client_id = os.getenv("PLAID_CLIENT_ID")
 plaid_secret = os.getenv("PLAID_SECRET")
@@ -156,19 +160,69 @@ def get_plaid_portfolio():
 
     return {"portfolio": portfolio}
 #get live stock price from finnhub api
-def get_live_price(ticker: str):
-    url = "https://finnhub.io/api/v1/quote"
-    #make a request to the finnhub api to get the current price of the stock
-    response = httpx.get(
-        url,
-        params={
-            "symbol": ticker,
-            "token": api_key
-        }
-    )
+def get_finnhub_data(endpoint: str, ticker: str, **params):
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail=f"FINNHUB_API_KEY is missing from {env_path}"
+        )
+
+    try:
+        response = httpx.get(
+            f"https://finnhub.io/api/v1/{endpoint}",
+            params={
+                "symbol": ticker,
+                "token": api_key,
+                **params
+            },
+            timeout=10.0
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Could not reach Finnhub"
+        ) from exc
+
     data = response.json()
+    if "error" in data:
+        raise HTTPException(status_code=502, detail=f"Finnhub error: {data['error']}")
+
+    return data
+
+
+def get_live_price(ticker: str):
+    data = get_finnhub_data("quote", ticker)
     return data["c"] #return current price
 
+def get_stock_metrics(ticker: str):
+    return get_finnhub_data("stock/metric", ticker, metric="all")
+
+def get_clean_metrics(ticker: str):
+    data = get_stock_metrics(ticker)
+    metrics = data.get("metric", {})
+
+    return {
+        "ticker": ticker,
+        "pe_ratio": metrics.get("peTTM"),
+        "eps": metrics.get("epsTTM"),
+        "revenue_growth": metrics.get("revenueGrowthTTMYoy"),
+        "eps_growth": metrics.get("epsGrowthTTMYoy"),
+        "profit_margin": metrics.get("netProfitMarginTTM"),
+        "return_on_equity": metrics.get("roeTTM"),
+        "current_ratio": metrics.get("currentRatioAnnual"),
+        "beta": metrics.get("beta"),
+        "52_week_return": metrics.get("52WeekPriceReturnDaily")
+    }
+
+@app.get("/analysis/{ticker}")
+def stock_analysis(ticker: str):
+    return get_clean_metrics(ticker.upper())
+
+
+@app.get("/metrics/{ticker}")
+def stock_metrics(ticker: str):
+    return get_stock_metrics(ticker.upper())
 
 #calculate the total value of the portfolio by summing the value of each stock
 @app.get("/portfolio")
