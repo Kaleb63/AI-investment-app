@@ -1,3 +1,14 @@
 .env
+.env.*
+!.env.example
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.pip-audit-cache/
+.coverage
+htmlcov/
+investment_app.db
+*.sqlite3
+benchmark-results*.json

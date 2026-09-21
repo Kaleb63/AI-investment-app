@@ -1,0 +1,33 @@
+{
+  "measured_at": "2026-09-21T01:39:50.431921+00:00",
+  "provider": "finnhub",
+  "configuration": {
+    "sizes": [10],
+    "note": "Results depend on API plan, provider latency, network, and cache state."
+  },
+  "runs": [
+    {
+      "requested_size": 10,
+      "status": "completed",
+      "summary": {
+        "total_requested": 10,
+        "successfully_analyzed": 9,
+        "matched": 9,
+        "rejected": 0,
+        "unavailable": 1,
+        "errored": 0
+      },
+      "performance": {
+        "duration_seconds": 0.2821,
+        "stocks_attempted": 10,
+        "stocks_successfully_analyzed": 9,
+        "stocks_failed": 1,
+        "average_processing_seconds": 0.028207,
+        "successful_stocks_per_second": 31.9068,
+        "failure_percentage": 10.0,
+        "cache_hits": 0,
+        "cache_misses": 10
+      }
+    }
+  ]
+}

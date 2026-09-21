@@ -1,0 +1,278 @@
+{
+  "portfolio": {
+    "simulated": true,
+    "total_value": 8000.0,
+    "position_count": 4,
+    "largest_position": {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "weight": 30.0
+    },
+    "top_3_concentration": 83.75,
+    "top_5_concentration": 100.0,
+    "concentration_hhi": 2609.38,
+    "effective_position_count": 3.83,
+    "asset_type_allocation": {
+      "cash": 16.25,
+      "equity": 56.25,
+      "etf": 27.5
+    },
+    "sector_allocation": {
+      "Technology": 56.25
+    },
+    "largest_sector": {
+      "sector": "Technology",
+      "weight": 56.25
+    },
+    "holdings": [
+      {
+        "ticker": "AAPL",
+        "name": "Apple Inc.",
+        "type": "equity",
+        "shares": 12,
+        "price": 200,
+        "value": 2400.0,
+        "sector": "Technology",
+        "analysis": {
+          "metrics": {
+            "ticker": "AAPL",
+            "pe_ratio": 29,
+            "eps": 7.1,
+            "revenue_growth": 8,
+            "eps_growth": 10,
+            "profit_margin": 24,
+            "return_on_equity": 45,
+            "current_ratio": 1.1,
+            "beta": 1.2,
+            "52_week_return": 12
+          },
+          "score": {
+            "overall_score": 75.6,
+            "signal": "positive",
+            "data_coverage": 100.0,
+            "categories": {
+              "valuation": 50,
+              "growth": 72.5,
+              "profitability": 100.0,
+              "financial_health": 70,
+              "momentum": 80
+            },
+            "reasons": [
+              "P/E ratio is elevated",
+              "Revenue is growing",
+              "EPS is growing",
+              "Profit margin is strong",
+              "Return on equity is strong",
+              "Current assets cover current liabilities",
+              "Stock has positive 52-week momentum"
+            ],
+            "weights": {
+              "valuation": 20,
+              "growth": 25,
+              "profitability": 25,
+              "financial_health": 15,
+              "momentum": 15
+            }
+          }
+        },
+        "weight": 30.0
+      },
+      {
+        "ticker": "VTI",
+        "name": "Sample Total Market ETF",
+        "type": "etf",
+        "shares": 8,
+        "price": 275,
+        "value": 2200.0,
+        "analysis": {
+          "status": "not_analyzed",
+          "reason": "etf requires a separate analysis model"
+        },
+        "weight": 27.5
+      },
+      {
+        "ticker": "MSFT",
+        "name": "Microsoft Corporation",
+        "type": "equity",
+        "shares": 5,
+        "price": 420,
+        "value": 2100.0,
+        "sector": "Technology",
+        "analysis": {
+          "metrics": {
+            "ticker": "MSFT",
+            "pe_ratio": 32,
+            "eps": 14,
+            "revenue_growth": 14,
+            "eps_growth": 16,
+            "profit_margin": 35,
+            "return_on_equity": 38,
+            "current_ratio": 1.4,
+            "beta": 0.9,
+            "52_week_return": 18
+          },
+          "score": {
+            "overall_score": 77.5,
+            "signal": "positive",
+            "data_coverage": 100.0,
+            "categories": {
+              "valuation": 50,
+              "growth": 80.0,
+              "profitability": 100.0,
+              "financial_health": 70,
+              "momentum": 80
+            },
+            "reasons": [
+              "P/E ratio is elevated",
+              "Revenue is growing",
+              "EPS is growing",
+              "Profit margin is strong",
+              "Return on equity is strong",
+              "Current assets cover current liabilities",
+              "Stock has positive 52-week momentum"
+            ],
+            "weights": {
+              "valuation": 20,
+              "growth": 25,
+              "profitability": 25,
+              "financial_health": 15,
+              "momentum": 15
+            }
+          }
+        },
+        "weight": 26.25
+      },
+      {
+        "ticker": null,
+        "name": "Sample Cash Balance",
+        "type": "cash",
+        "shares": 1,
+        "price": 1300,
+        "value": 1300.0,
+        "analysis": {
+          "status": "not_analyzed",
+          "reason": "cash requires a separate analysis model"
+        },
+        "weight": 16.25
+      }
+    ],
+    "ai_explanation": null
+  },
+  "screen": {
+    "criteria": {
+      "min_score": 70,
+      "max_pe_ratio": 30,
+      "min_profit_margin": 20
+    },
+    "summary": {
+      "total_requested": 2,
+      "successfully_analyzed": 2,
+      "matched": 1,
+      "rejected": 1,
+      "unavailable": 0,
+      "errored": 0
+    },
+    "matching_stocks": [
+      {
+        "ticker": "AAPL",
+        "metrics": {
+          "ticker": "AAPL",
+          "pe_ratio": 29,
+          "eps": 7.1,
+          "revenue_growth": 8,
+          "eps_growth": 10,
+          "profit_margin": 24,
+          "return_on_equity": 45,
+          "current_ratio": 1.1,
+          "beta": 1.2,
+          "52_week_return": 12
+        },
+        "score": {
+          "overall_score": 75.6,
+          "signal": "positive",
+          "data_coverage": 100.0,
+          "categories": {
+            "valuation": 50,
+            "growth": 72.5,
+            "profitability": 100.0,
+            "financial_health": 70,
+            "momentum": 80
+          },
+          "reasons": [
+            "P/E ratio is elevated",
+            "Revenue is growing",
+            "EPS is growing",
+            "Profit margin is strong",
+            "Return on equity is strong",
+            "Current assets cover current liabilities",
+            "Stock has positive 52-week momentum"
+          ],
+          "weights": {
+            "valuation": 20,
+            "growth": 25,
+            "profitability": 25,
+            "financial_health": 15,
+            "momentum": 15
+          }
+        },
+        "passed_criteria": ["min_score", "max_pe_ratio", "min_profit_margin"]
+      }
+    ],
+    "rejected_stocks": [
+      {
+        "ticker": "MSFT",
+        "metrics": {
+          "ticker": "MSFT",
+          "pe_ratio": 32,
+          "eps": 14,
+          "revenue_growth": 14,
+          "eps_growth": 16,
+          "profit_margin": 35,
+          "return_on_equity": 38,
+          "current_ratio": 1.4,
+          "beta": 0.9,
+          "52_week_return": 18
+        },
+        "score": {
+          "overall_score": 77.5,
+          "signal": "positive",
+          "data_coverage": 100.0,
+          "categories": {
+            "valuation": 50,
+            "growth": 80.0,
+            "profitability": 100.0,
+            "financial_health": 70,
+            "momentum": 80
+          },
+          "reasons": [
+            "P/E ratio is elevated",
+            "Revenue is growing",
+            "EPS is growing",
+            "Profit margin is strong",
+            "Return on equity is strong",
+            "Current assets cover current liabilities",
+            "Stock has positive 52-week momentum"
+          ],
+          "weights": {
+            "valuation": 20,
+            "growth": 25,
+            "profitability": 25,
+            "financial_health": 15,
+            "momentum": 15
+          }
+        },
+        "passed_criteria": ["min_score", "min_profit_margin"],
+        "failed_criteria": [
+          {
+            "criterion": "max_pe_ratio",
+            "comparison": "less_than_or_equal",
+            "required_value": 30,
+            "actual_value": 32
+          }
+        ],
+        "unevaluated_criteria": []
+      }
+    ],
+    "unavailable_stocks": []
+  }
+}

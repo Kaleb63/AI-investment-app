@@ -1,0 +1,10 @@
+.env
+.git
+.venv
+__pycache__
+*.pyc
+*.db
+.pytest_cache
+.ruff_cache
+.pip-audit-cache
+benchmark-results*.json
