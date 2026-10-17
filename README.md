@@ -1,9 +1,47 @@
-# AI Investment Research API
+# Aether AI Investment App
 
-A backend-only investment research application built with FastAPI. It connects to
+A React frontend and FastAPI backend for investment research. It connects to
 Plaid investment accounts, retrieves Finnhub market data, calculates transparent
 stock and portfolio scores, supports deterministic stock screening, and uses the
 OpenAI API only to translate or explain structured financial evidence.
+
+## Start the connected app on this computer
+
+From PowerShell:
+
+```powershell
+cd C:\app\AI-investment-app
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Start-App.ps1
+```
+
+Open **http://127.0.0.1:3000**. The frontend sends API requests directly to
+**http://127.0.0.1:8000**; the backend permits the local frontend through CORS.
+The launcher starts both services in the background, checks backend health and
+the current API routes, then waits for the Aether page before reporting success.
+Logs and process records are stored in the ignored `.local` folder. Running the
+launcher again reuses compatible servers. It never stops a server already using
+either port.
+
+To stop only the services started by the launcher:
+
+```powershell
+cd C:\app\AI-investment-app
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Stop-App.ps1
+```
+
+The demo portfolio uses the running backend without external credentials.
+Live quotes, stock research, and screening require `FINNHUB_API_KEY`; AI search
+and explanations require `OPENAI_API_KEY`. Brokerage connections require a
+signed-in account plus Plaid credentials and `PLAID_ENCRYPTION_KEY`. Put provider
+credentials in the root `.env`, then restart the backend. The frontend's
+`VITE_API_BASE_URL` is public configuration and must never contain credentials.
+Successful connectivity does not imply that these external services are
+configured. See [frontend/README.md](frontend/README.md) for the interface guide.
+
+For a fresh checkout, create `.venv` and install the Python dependencies using
+the local setup below before starting. The frontend launcher installs its locked
+dependencies when needed; it uses installed Node.js or this computer's bundled
+Codex Node.js runtime.
 
 This software is for research and demonstration. It is not investment advice and
 does not guarantee performance. It cannot place trades.

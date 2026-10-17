@@ -7,14 +7,14 @@ A complete React + TypeScript research interface for the existing FastAPI projec
 Open PowerShell and run:
 
 ```powershell
-cd C:\Users\kla89\Documents\AI-investment-app\frontend
-.\Start-Frontend.ps1
+cd C:\app\AI-investment-app
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Start-App.ps1
 ```
 
-The launcher uses an installed Node.js runtime or the bundled Codex runtime on this computer. If dependencies are missing, it installs the exact versions from the lockfile. It does not change the PowerShell execution policy. If your shell blocks local scripts, use the direct command below after dependency installation:
+The root launcher starts and checks both the frontend and backend. It stores logs in `.local` and reuses compatible running servers. Stop services it started with `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Stop-App.ps1` from the same project folder. The frontend uses an installed Node.js runtime or the bundled Codex runtime on this computer and installs exact versions from the lockfile if needed. To run only the frontend after starting the backend separately:
 
 ```powershell
-cd C:\Users\kla89\Documents\AI-investment-app\frontend
+cd C:\app\AI-investment-app\frontend
 & "$env:USERPROFILE\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe" .\node_modules\vite\bin\vite.js --host 127.0.0.1 --port 3000
 ```
 
@@ -29,18 +29,18 @@ npm run dev
 
 ## Connect the current backend
 
-The default API URL is `http://127.0.0.1:8000`. Override it by copying `.env.example` to `.env` **inside the frontend folder** and editing `VITE_API_BASE_URL`. Restart Vite after changing an environment variable. Every `VITE_` variable is public browser configuration; never put provider credentials there.
+The API URL is configured as `http://127.0.0.1:8000` in `frontend/.env.local`, matching the HTTP client's default. To change it, edit `VITE_API_BASE_URL` in that file (copy `.env.example` to `.env.local` if it is missing), then restart Vite. Every `VITE_` variable is public browser configuration; never put provider credentials there.
 
 The backend inspected for this implementation already permits `http://localhost:3000` and `http://127.0.0.1:3000` through CORS. Port 3000 is fixed so Vite cannot silently move to an unapproved origin.
 
-During implementation, the process already running on port 8000 exposed an older route set than the backend source on disk. Restart that backend from the current repository in your existing Python environment:
+The root launcher checks the backend's current route set before reusing port 8000. To start the backend separately in a visible terminal:
 
 ```powershell
-cd C:\Users\kla89\Documents\AI-investment-app
-uvicorn backend.main:app --reload
+cd C:\app\AI-investment-app
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Stop the old server in its own terminal first. Keep your existing backend `.env`, credentials, database, and migrations. Follow the root backend README if its Python dependencies or database have not yet been initialized. The frontend changes do not alter them.
+If port 8000 is occupied by an incompatible application, stop it from its own terminal first. Follow the root README if Python dependencies or the database have not yet been initialized. Live market data requires `FINNHUB_API_KEY`; AI features require `OPENAI_API_KEY`; account connections also require Plaid credentials and encryption configuration in the root `.env`. The simulated demo portfolio needs no external provider credentials.
 
 Check `http://127.0.0.1:8000/docs` for `/auth/login`, `/screen`, `/ai_screen`, `/demo/portfolio_analysis`, `/watchlist`, `/saved_screens`, and `/scan_history`. A root health response only proves that the server is reachable; it does not prove that all providers are configured.
 
@@ -90,7 +90,7 @@ Form values stay in their page because they only affect that form. Session state
 
 ## File map
 
-All paths below are relative to `C:\Users\kla89\Documents\AI-investment-app\frontend`.
+All paths below are relative to `C:\app\AI-investment-app\frontend`.
 
 | File                                         | Purpose                                                                                      |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------- |
