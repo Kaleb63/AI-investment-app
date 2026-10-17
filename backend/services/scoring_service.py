@@ -64,6 +64,8 @@ def score_equity(
             reasons.append(f"{label} growth is strong")
         elif value > 0:
             reasons.append(f"{label} is growing")
+        elif value == 0:
+            reasons.append(f"{label} growth is flat")
         else:
             reasons.append(f"{label} growth is negative")
     if growth_scores:
@@ -83,7 +85,10 @@ def score_equity(
             reasons.append("Company is profitable")
         else:
             profitability_scores.append(20)
-            reasons.append("Company has a negative profit margin")
+            reasons.append(
+                "Company has a zero profit margin" if profit_margin == 0
+                else "Company has a negative profit margin"
+            )
 
     return_on_equity = metrics.get("return_on_equity")
     if return_on_equity is not None:
@@ -98,7 +103,10 @@ def score_equity(
             reasons.append("Return on equity is positive but relatively low")
         else:
             profitability_scores.append(20)
-            reasons.append("Return on equity is negative")
+            reasons.append(
+                "Return on equity is zero" if return_on_equity == 0
+                else "Return on equity is negative"
+            )
     if profitability_scores:
         category_scores["profitability"] = sum(profitability_scores) / len(profitability_scores)
 
@@ -135,7 +143,10 @@ def score_equity(
             reasons.append("Stock has positive 52-week momentum")
         elif year_return >= -10:
             category_scores["momentum"] = 40
-            reasons.append("Stock has negative 52-week momentum")
+            reasons.append(
+                "Stock has flat 52-week momentum" if year_return == 0
+                else "Stock has negative 52-week momentum"
+            )
         else:
             category_scores["momentum"] = 20
             reasons.append("Stock has negative 52-week momentum")

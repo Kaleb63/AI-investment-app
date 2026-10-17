@@ -153,6 +153,49 @@ python -m pytest -q
 ruff check backend
 ```
 
+The recorded verification run on October 17, 2026 passed **140 tests**, with
+**0 failures** and **2 skipped** opt-in live OpenAI evaluations. See
+[`test-results/README.md`](test-results/README.md) for the environment, coverage,
+and machine-readable results. GitHub Actions now runs pytest on pushes and pull
+requests and uploads a JUnit results artifact.
+
+### Validated AI explanations
+
+The application calculates scores before requesting an explanation. OpenAI uses
+Structured Outputs to select IDs from a catalog of verified statements; it cannot
+provide the displayed prose or financial figures. The server validates the
+selection and renders each sentence from the original calculations. This prevents
+invented values and also prevents reusing a real number for the wrong metric or
+unit. The selection approach follows the
+[official OpenAI Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+
+Stock explanations always include the overall score, category breakdown,
+configured weights, available-data coverage, and missing metrics. Portfolio
+explanations include concentration, largest-position weight, allocations, and
+missing information. Zero growth and returns are described as flat rather than
+negative. Numerical scoring thresholds and weights are unchanged.
+
+Malformed, duplicate, or unknown evidence IDs, extra prose or numeric claims,
+refusals, and incomplete responses fail validation. `GET /ai_analysis/{ticker}`
+returns HTTP 502 with `invalid_ai_explanation` for invalid output. Optional
+portfolio explanations remain `null` on AI failure, while the calculated
+portfolio analysis is returned. The `ai_explanation` string contract is unchanged.
+
+The default suite uses synthetic financial fixtures and mocked OpenAI responses;
+it does not measure the live model's selection quality or provider availability.
+To run the two real-model grounding evaluations with your own OpenAI credentials
+(this makes paid API calls):
+
+```powershell
+$env:OPENAI_API_KEY = "your-key"
+$env:RUN_LIVE_OPENAI_EVAL = "1"
+python -m pytest backend/tests/test_live_ai_evaluation.py -q
+```
+
+The live evaluations check that every returned paragraph belongs to the original
+evidence catalog and every required disclosure is present. They fail if enabled
+without an API key. Keep credentials out of source control.
+
 ## Benchmarks
 
 The benchmark command records actual results; the repository intentionally makes

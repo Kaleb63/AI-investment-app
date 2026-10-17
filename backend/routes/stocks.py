@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Path
+from pydantic import AfterValidator
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -13,10 +16,11 @@ from backend.services.scoring_service import score_equity
 
 router = APIRouter(tags=["stocks"])
 DEMO_SHARES = {"AAPL": 5, "NVDA": 2, "TSLA": 3}
+TickerPath = Annotated[str, Path(), AfterValidator(normalize_ticker)]
 
 
 @router.get("/stock/{ticker}", summary="Get a current stock quote")
-async def stock_quote(ticker: str):
+async def stock_quote(ticker: TickerPath):
     ticker = normalize_ticker(ticker)
     quote = await finnhub_service.get_quote(ticker)
     shares = DEMO_SHARES.get(ticker)
@@ -27,7 +31,7 @@ async def stock_quote(ticker: str):
 
 
 @router.get("/metrics/{ticker}", summary="Get normalized financial metrics")
-async def stock_metrics(ticker: str):
+async def stock_metrics(ticker: TickerPath):
     return await finnhub_service.get_clean_metrics(normalize_ticker(ticker))
 
 
@@ -37,7 +41,7 @@ async def stock_metrics(ticker: str):
     summary="Run deterministic equity analysis",
 )
 async def stock_analysis(
-    ticker: str,
+    ticker: TickerPath,
     user: User = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
@@ -58,7 +62,7 @@ async def stock_analysis(
 
 
 @router.get("/ai_analysis/{ticker}", summary="Explain deterministic stock analysis")
-async def ai_stock_analysis(ticker: str):
+async def ai_stock_analysis(ticker: TickerPath):
     ticker = normalize_ticker(ticker)
     metrics = await finnhub_service.get_clean_metrics(ticker)
     score = score_equity(metrics)
@@ -83,5 +87,5 @@ async def ai_stock_analysis(ticker: str):
     "/historical/{ticker}",
     summary="Calculate historical returns, volatility, and moving averages",
 )
-async def historical_analysis(ticker: str):
+async def historical_analysis(ticker: TickerPath):
     return await historical_service.analyze(normalize_ticker(ticker))
